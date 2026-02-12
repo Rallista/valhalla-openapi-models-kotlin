@@ -5,20 +5,76 @@ on:
     inputs:
       bump_version_scheme:
         type: choice
-        description: 'Bump version scheme'
+        description: "Release"
         required: true
-        default: 'patch'
+        default: "patch"
         options:
-        - 'patch'
-        - 'minor'
-        - 'major'
+          - "patch"
+          - "minor"
+          - "major"
 
 jobs:
-  release-on-push:
+  version_bump:
     runs-on: ubuntu-latest
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    permissions:
+      # Give the default GITHUB_TOKEN write permission to commit and push the
+      # added or changed files to the repository.
+      contents: write
+
     steps:
-      - uses: rymndhng/release-on-push-action@master
+      - name: Check out repo
+        uses: actions/checkout@v4
         with:
-          bump_version_scheme: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && 'patch' || inputs.bump_version_scheme }}
+          token: ${{ secrets.PAT }}
+
+      - name: Configure Git
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+
+      - name: Bump version
+        id: version
+        run: ./scripts/version_bump.sh ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && 'patch' || inputs.bump_version_scheme }}
+
+      - name: Commit version update
+        run: |
+          git add settings.gradle.kts
+          git commit -m "Update version to ${{ steps.version.outputs.version }}"
+          git push
+
+      - uses: softprops/action-gh-release@v1
+        id: release
+        with:
+          generate_release_notes: true
+          tag_name: ${{ steps.version.outputs.version }}
+
+  publish:
+    runs-on: ubuntu-latest
+    needs: version_bump
+
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: "17"
+          distribution: "temurin"
+          cache: gradle
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@417ae3ccd767c252f5661f1ace9f835f9654f2b5 # v3.1.0
+
+      - name: Publish to Maven Central
+        run: ./gradlew publishAndReleaseToMavenCentral --no-configuration-cache
+        env:
+          ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+          ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
+          ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
+          ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
