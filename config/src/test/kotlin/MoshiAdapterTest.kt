@@ -8,7 +8,6 @@ import kotlin.test.assertNotNull
 class MoshiAdapterTest {
 
   private val moshi: Moshi = Moshi.Builder()
-    .add(BigDecimalAdapter)
     .add(KotlinJsonAdapterFactory())
     .build()
 

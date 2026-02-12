@@ -1,0 +1,16 @@
+rules:
+  require-double-format:
+    description: Number types should use format 'double' for precision.
+    message: "{{path}} must have 'format: double'."
+    severity: error
+    given: "$..[?(@.type === 'number')]"
+    then:
+      function: schema
+      functionOptions:
+        schema:
+          type: object
+          required:
+            - format
+          properties:
+            format:
+              const: double
