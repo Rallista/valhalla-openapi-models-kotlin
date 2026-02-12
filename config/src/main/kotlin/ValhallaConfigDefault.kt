@@ -1,3 +1,5 @@
+package com.valhalla.config
+
 import com.valhalla.config.models.AdditionalData
 import com.valhalla.config.models.Httpd
 import com.valhalla.config.models.HttpdService

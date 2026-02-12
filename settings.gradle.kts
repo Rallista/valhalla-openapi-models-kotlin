@@ -1,5 +1,5 @@
 plugins {
-    kotlin("jvm") version "2.0.20" apply false
+    kotlin("jvm") version "2.3.0" apply false
 }
 
 rootProject.name = "valhalla-models"

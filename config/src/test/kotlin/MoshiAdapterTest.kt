@@ -1,12 +1,16 @@
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
+import com.valhalla.config.ValhallaConfigBuilder
 import com.valhalla.config.models.ValhallaConfig
 import kotlin.test.Test
 import kotlin.test.assertNotNull
 
 class MoshiAdapterTest {
 
-  private val moshi: Moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
+  private val moshi: Moshi = Moshi.Builder()
+    .add(BigDecimalAdapter)
+    .add(KotlinJsonAdapterFactory())
+    .build()
 
   @Test
   fun testEncode() {
