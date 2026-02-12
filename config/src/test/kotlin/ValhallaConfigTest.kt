@@ -3,6 +3,7 @@ import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import com.valhalla.config.ValhallaConfigBuilder
 import com.valhalla.config.models.ValhallaConfig
 import kotlin.test.Test
+import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 
 class ValhallaConfigTest {
@@ -21,5 +22,10 @@ class ValhallaConfigTest {
     assertNotNull(configJson)
     assert(configJson.contains("mjolnir")) { "Expected JSON to contain mjolnir config" }
     assert(configJson.contains("httpd")) { "Expected JSON to contain httpd config" }
+  }
+
+  @Test
+  fun testFailure() {
+    assertFalse(true)
   }
 }
