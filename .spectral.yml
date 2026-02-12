@@ -13,4 +13,6 @@ rules:
             - format
           properties:
             format:
-              const: double
+              enum:
+                - float
+                - double
