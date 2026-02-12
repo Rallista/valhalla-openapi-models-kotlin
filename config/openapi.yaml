@@ -242,6 +242,7 @@ components:
               default: 50
             sigma_z:
               type: number
+              format: double
               default: 4.07
             turn_penalty_factor:
               type: integer
