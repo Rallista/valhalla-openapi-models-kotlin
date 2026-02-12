@@ -23,9 +23,4 @@ class ValhallaConfigTest {
     assert(configJson.contains("mjolnir")) { "Expected JSON to contain mjolnir config" }
     assert(configJson.contains("httpd")) { "Expected JSON to contain httpd config" }
   }
-
-  @Test
-  fun testFailure() {
-    assertFalse(true)
-  }
 }
