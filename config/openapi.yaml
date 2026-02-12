@@ -25,22 +25,22 @@ components:
         expand_within_distance:
           type: object
           properties:
-            0:
+            "0":
               type: integer
               default: 100000000
-            1:
+            "1":
               type: integer
               default: 20000
-            2:
+            "2":
               type: integer
               default: 5000
         max_up_transitions:
           type: object
           properties:
-            1:
+            "1":
               type: integer
               default: 400
-            2:
+            "2":
               type: integer
               default: 100
     valhalla_config:
@@ -514,22 +514,22 @@ components:
                 max_allowed_up_transitions:
                   type: object
                   properties:
-                    1:
+                    "1":
                       type: integer
                       default: 400
-                    2:
+                    "2":
                       type: integer
                       default: 100
                 max_expand_within_distance:
                   type: object
                   properties:
-                    0:
+                    "0":
                       type: integer
                       default: 100000000
-                    1:
+                    "1":
                       type: integer
                       default: 20000
-                    2:
+                    "2":
                       type: integer
                       default: 5000
             costmatrix:
@@ -538,22 +538,22 @@ components:
                 max_allowed_up_transitions:
                   type: object
                   properties:
-                    1:
+                    "1":
                       type: integer
                       default: 400
-                    2:
+                    "2":
                       type: integer
                       default: 100
                 max_expand_within_distance:
                   type: object
                   properties:
-                    0:
+                    "0":
                       type: integer
                       default: 100000000
-                    1:
+                    "1":
                       type: integer
                       default: 100000
-                    2:
+                    "2":
                       type: integer
                       default: 5000
             unidirectional_astar:
@@ -562,22 +562,22 @@ components:
                 max_allowed_up_transitions:
                   type: object
                   properties:
-                    1:
+                    "1":
                       type: integer
                       default: 400
-                    2:
+                    "2":
                       type: integer
                       default: 100
                 max_expand_within_distance:
                   type: object
                   properties:
-                    0:
+                    "0":
                       type: integer
                       default: 100000000
-                    1:
+                    "1":
                       type: integer
                       default: 100000
-                    2:
+                    "2":
                       type: integer
                       default: 5000
         isochrone:
@@ -792,6 +792,7 @@ components:
           properties:
             alternative_cost_extend:
               type: number
+              format: double
               default: 1.0
             alternative_iterations_delta:
               type: integer
