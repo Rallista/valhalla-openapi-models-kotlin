@@ -1,12 +1,10 @@
 [versions]
-openapi = "7.5.0"
+openapi-generator = "7.12.0"
 moshi = "1.15.1"
 kotest = "5.9.0"
-swagger-codegen = "2.19.2"
 maven-publish = "0.29.0"
 
 [libraries]
-openapi-generator = { group = "org.openapitools", name = "openapi-generator-cli", version.ref = "openapi" }
 moshi-kotlin = { group = "com.squareup.moshi", name = "moshi-kotlin", version.ref = "moshi" }
 moshi-adapters = { group = "com.squareup.moshi", name = "moshi-adapters", version.ref = "moshi" }
 kotest-junit5 = { group = "io.kotest", name = "kotest-runner-junit5", version.ref = "kotest" }
@@ -14,5 +12,5 @@ kotest-assertions-core = { group = "io.kotest", name = "kotest-assertions-core",
 kotest-assertions-json = { group = "io.kotest", name = "kotest-assertions-json", version.ref = "kotest" }
 
 [plugins]
-swagger-codegen = { id = "org.hidetake.swagger.generator", version.ref = "swagger-codegen" }
+openapi-generator = { id = "org.openapi.generator", version.ref = "openapi-generator" }
 maven-publish = { id = "com.vanniktech.maven.publish", version.ref = "maven-publish" }

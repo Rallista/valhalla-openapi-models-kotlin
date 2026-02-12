@@ -1,11 +1,10 @@
 import com.vanniktech.maven.publish.JavadocJar
 import com.vanniktech.maven.publish.KotlinJvm
 import com.vanniktech.maven.publish.SonatypeHost
-import org.hidetake.gradle.swagger.generator.GenerateSwaggerCode
 
 plugins {
     kotlin("jvm")
-    alias(libs.plugins.swagger.codegen)
+    alias(libs.plugins.openapi.generator)
     alias(libs.plugins.maven.publish)
 }
 
@@ -14,9 +13,7 @@ repositories {
 }
 
 dependencies {
-    swaggerCodegen(libs.openapi.generator)
-
-    // Dependencies of the generated code. Check out `build.gradle` in your build folder later if you're curious.
+    // Dependencies of the generated code
     implementation(libs.moshi.kotlin)
     implementation(libs.moshi.adapters)
 
@@ -38,40 +35,38 @@ tasks.test {
     useJUnitPlatform()
 }
 
-swaggerSources {
-  register("valhalla") {
-      val openApiFile = file("./openapi.yaml")
-      require(openApiFile.exists()) { "OpenAPI spec file not found: $openApiFile" }
+val openApiOutputDir = layout.buildDirectory.dir("generated/openapi")
 
-      setInputFile(openApiFile)
-      code(delegateClosureOf<GenerateSwaggerCode> {
-          language = "kotlin"
-          components = listOf("models")
-          additionalProperties = mapOf(
-              "groupId" to "com.valhalla",
-              "packageName" to "com.valhalla.config"
-          )
-          rawOptions = listOf(
-              "--skip-validate-spec"
-          )
-      })
-  }
+openApiGenerate {
+    generatorName.set("kotlin")
+    inputSpec.set("$projectDir/openapi.yaml")
+    outputDir.set(openApiOutputDir.map { it.asFile.absolutePath })
+    packageName.set("com.valhalla.config")
+    globalProperties.set(mapOf(
+        "models" to ""
+    ))
+    configOptions.set(mapOf(
+        "groupId" to "com.valhalla",
+        "serializationLibrary" to "moshi"
+    ))
+    skipValidateSpec.set(true)
 }
 
-// Comment this out if you do NOT want the code gen to run every time you build.
-// There is an HTTP cache by default, so it won't necessarily make a request every single build.
+// Run code gen before compiling
 tasks.compileKotlin.configure {
-    dependsOn(tasks.generateSwaggerCode)
+    dependsOn(tasks.openApiGenerate)
 }
 
 tasks.named("sourcesJar") {
-    dependsOn(tasks.generateSwaggerCode)
+    dependsOn(tasks.openApiGenerate)
 }
 
 sourceSets {
-    val main by getting
-    val valhalla by swaggerSources.getting
-    main.kotlin.srcDir("${valhalla.code.outputDir}/src/main/kotlin")
+    main {
+        kotlin.srcDir(openApiOutputDir.map { it.dir("src/main/kotlin") })
+        // Also include the manually written Kotlin sources
+        kotlin.srcDir("src/main/kotlin")
+    }
 }
 
 val libraryVersion: String by extra
