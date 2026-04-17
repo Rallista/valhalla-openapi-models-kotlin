@@ -1334,8 +1334,41 @@ components:
             Roads intersecting these rings will be avoided during path finding. Open rings will be
             closed automatically.
           example: [[[30, 10], [40, 40], [20, 40], [10, 20], [30, 10]]]
-        directions_options:
-          $ref: '#/components/schemas/directionsOptions'
+        units:
+          $ref: '#/components/schemas/distanceUnit'
+        language:
+          $ref: '#/components/schemas/valhallaLanguages'
+        directions_type:
+          type: string
+          enum:
+            - none
+            - maneuvers
+            - instructions
+          default: instructions
+          description: >-
+            The level of directional narrative to include. Locations and times will always be returned,
+            but narrative generation verbosity can be controlled with this parameter.
+        format:
+          type: string
+          enum:
+            - json
+            - gpx
+            - osrm
+            - pbf
+        shape_format:
+          type: string
+          enum:
+            - polyline6
+            - polyline5
+            - geojson
+            - no_shape
+          default: polyline6
+        banner_instructions:
+          type: boolean
+        voice_instructions:
+          type: boolean
+        alternates:
+          type: integer
       required:
         - locations
         - costing
@@ -1360,9 +1393,7 @@ components:
               "use_highways": 0
             }
           },
-          "directions_options": {
-            "units": "miles"
-          }
+          "units": "miles"
         }
     optimizedRouteRequest:
       properties:
