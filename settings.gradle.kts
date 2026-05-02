@@ -1,4 +1,5 @@
 plugins {
+    id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
     kotlin("jvm") version "2.3.0" apply false
 }
 
