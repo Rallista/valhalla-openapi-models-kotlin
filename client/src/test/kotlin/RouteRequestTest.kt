@@ -2,7 +2,6 @@ import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import com.valhalla.api.models.CostingModel
 import kotlin.test.Test
-import com.valhalla.api.models.DirectionsOptions
 import com.valhalla.api.models.RouteRequest
 import com.valhalla.api.models.RoutingWaypoint
 import io.kotest.assertions.json.shouldEqualJson
@@ -20,7 +19,7 @@ class RouteRequestTest {
         RoutingWaypoint(lat = 45.869701, lon = -123.766121)
       ),
       costing = CostingModel.auto,
-      directionsOptions = DirectionsOptions(format = DirectionsOptions.Format.json)
+      format = RouteRequest.Format.json
     )
 
     val actualJson = moshi.adapter(RouteRequest::class.java).toJson(request)
@@ -55,13 +54,11 @@ class RouteRequestTest {
           }
         ],
         "costing": "auto",
-        "directions_options": {
-          "units": "km",
-          "language": "en-US",
-          "directions_type": "instructions",
-          "format": "json",
-          "shape_format": "polyline6"
-        }
+        "units": "km",
+        "language": "en-US",
+        "directions_type": "instructions",
+        "format": "json",
+        "shape_format": "polyline6"
       }
       """
     }
