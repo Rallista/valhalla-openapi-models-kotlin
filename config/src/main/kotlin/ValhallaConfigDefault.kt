@@ -1,5 +1,8 @@
 package com.valhalla.config
 
+import com.squareup.moshi.JsonDataException
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import com.valhalla.config.models.AdditionalData
 import com.valhalla.config.models.Httpd
 import com.valhalla.config.models.HttpdService
@@ -37,6 +40,8 @@ import com.valhalla.config.models.Thor
 import com.valhalla.config.models.ThorLogging
 import com.valhalla.config.models.ThorService
 import com.valhalla.config.models.ValhallaConfig
+import java.io.File
+import java.io.IOException
 
 class ValhallaConfigBuilder {
 
@@ -67,11 +72,104 @@ class ValhallaConfigBuilder {
     return this
   }
 
+  /**
+   * Set the directory of skadi elevation tiles.
+   *
+   * Without it valhalla's `height` action answers null for every point.
+   *
+   * e.g. /data/user/0/com.valhalla.valhalla.test/files/elevation
+   */
+  fun withElevation(elevationDir: String): ValhallaConfigBuilder {
+    config = config.copy(
+      additionalData = (config.additionalData ?: AdditionalData()).copy(
+        elevation = elevationDir
+      )
+    )
+    return this
+  }
+
+  /**
+   * Fetch tiles from a server on demand, caching them in [tileDir].
+   *
+   * Valhalla fills the `{tilePath}` portion of [tileUrl] in with the tile it wants.
+   *
+   * The connectivity map is turned off, because it is built from the tiles that are present and so
+   * cannot answer for tiles that have not been downloaded yet.
+   *
+   * @param tileUrl the URL pattern tiles are fetched from.
+   * @param tileDir where downloaded tiles are stored.
+   * @param tileUrlGz whether the server serves gzip-compressed tiles.
+   */
+  fun withTileUrl(
+    tileUrl: String,
+    tileDir: String,
+    tileUrlGz: Boolean = false
+  ): ValhallaConfigBuilder {
+    config = config.copy(
+      mjolnir = config.mjolnir?.copy(
+        tileUrl = tileUrl,
+        tileUrlGz = tileUrlGz,
+        tileDir = tileDir
+      ),
+      loki = config.loki?.copy(
+        useConnectivity = false
+      )
+    )
+    return this
+  }
+
+  /**
+   * Start from [config] rather than from [DEFAULT].
+   *
+   * Use this to layer the `with` functions on top of a config that came from somewhere else, such
+   * as [fromJson].
+   */
+  fun startingFrom(config: ValhallaConfig): ValhallaConfigBuilder {
+    this.config = config
+    return this
+  }
+
   fun build(): ValhallaConfig {
     return config
   }
 
   companion object {
+
+    private val defaultMoshi: Moshi by lazy {
+      Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
+    }
+
+    /**
+     * Parse a complete valhalla config from a JSON string.
+     *
+     * The JSON must already carry tile paths that are correct for the device it will run on;
+     * nothing here rewrites them.
+     *
+     * @throws IllegalArgumentException if the JSON is malformed or is not a valhalla config.
+     */
+    @JvmStatic
+    @JvmOverloads
+    fun fromJson(json: String, moshi: Moshi = defaultMoshi): ValhallaConfig =
+      try {
+        moshi.adapter(ValhallaConfig::class.java).fromJson(json)
+          ?: throw IllegalArgumentException("the valhalla config JSON was the literal null")
+      } catch (e: JsonDataException) {
+        throw IllegalArgumentException("the valhalla config JSON could not be read", e)
+      } catch (e: IOException) {
+        throw IllegalArgumentException("the valhalla config JSON was malformed", e)
+      }
+
+    /**
+     * Parse a complete valhalla config from a file.
+     *
+     * @throws IllegalArgumentException if the file is malformed or is not a valhalla config.
+     * @throws IOException if the file cannot be read.
+     */
+    @JvmStatic
+    @JvmOverloads
+    fun fromFile(file: File, moshi: Moshi = defaultMoshi): ValhallaConfig =
+      fromJson(file.readText(), moshi)
+
     val DEFAULT = ValhallaConfig(
       additionalData = AdditionalData(),
       httpd = Httpd(
