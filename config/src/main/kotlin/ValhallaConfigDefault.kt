@@ -8,7 +8,6 @@ import com.valhalla.config.models.Httpd
 import com.valhalla.config.models.HttpdService
 import com.valhalla.config.models.Logging
 import com.valhalla.config.models.Loki
-import com.valhalla.config.models.LokiLogging
 import com.valhalla.config.models.LokiService
 import com.valhalla.config.models.LokiServiceDefaults
 import com.valhalla.config.models.Meili
@@ -26,6 +25,7 @@ import com.valhalla.config.models.OdinMarkupFormatter
 import com.valhalla.config.models.OdinService
 import com.valhalla.config.models.ServiceLimits
 import com.valhalla.config.models.ServiceLimitsAuto
+import com.valhalla.config.models.ServiceLimitsAutoPedestrian
 import com.valhalla.config.models.ServiceLimitsBicycle
 import com.valhalla.config.models.ServiceLimitsBus
 import com.valhalla.config.models.ServiceLimitsCentroid
@@ -37,7 +37,6 @@ import com.valhalla.config.models.ServiceLimitsStatus
 import com.valhalla.config.models.ServiceLimitsTrace
 import com.valhalla.config.models.Statsd
 import com.valhalla.config.models.Thor
-import com.valhalla.config.models.ThorLogging
 import com.valhalla.config.models.ThorService
 import com.valhalla.config.models.ValhallaConfig
 import java.io.File
@@ -178,8 +177,8 @@ class ValhallaConfigBuilder {
           listen = "tcp://*:8002"
         )
       ),
+      logging = Logging(),
       loki = Loki(
-        logging = LokiLogging(),
         service = LokiService(),
         serviceDefaults = LokiServiceDefaults(),
       ),
@@ -188,22 +187,20 @@ class ValhallaConfigBuilder {
         bicycle = MeiliBicycle(),
         default = MeiliDefault(),
         grid = MeiliGrid(),
-        logging = Logging(),
         multimodal = MeiliMultimodal(),
         pedestrian = MeiliPedestrian(),
         service = MeiliService()
       ),
       mjolnir = Mjolnir(
         dataProcessing = MjolnirDataProcessing(),
-        logging = Logging(),
       ),
       odin = Odin(
-        logging = Logging(),
         markupFormatter = OdinMarkupFormatter(),
         service = OdinService()
       ),
       serviceLimits = ServiceLimits(
         auto = ServiceLimitsAuto(),
+        autoPedestrian = ServiceLimitsAutoPedestrian(),
         bicycle = ServiceLimitsBicycle(),
         bikeshare = ServiceLimitsBicycle(),
         bus = ServiceLimitsBus(),
@@ -222,7 +219,6 @@ class ValhallaConfigBuilder {
       ),
       statsd = Statsd(),
       thor = Thor(
-        logging = ThorLogging(),
         service = ThorService()
       )
     )
